@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.the_render_box.dnd.ui.composables.InfoManagerComposable
 import com.the_render_box.dnd.ui.theme.DnD_Initiative_TrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,10 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             DnD_Initiative_TrackerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    InfoManagerComposable(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -40,8 +38,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainAppPreview() {
     DnD_Initiative_TrackerTheme {
-        Greeting("Android")
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            InfoManagerComposable(modifier = Modifier.padding(innerPadding))
+        }
     }
 }
