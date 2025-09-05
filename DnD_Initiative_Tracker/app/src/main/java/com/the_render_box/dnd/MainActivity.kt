@@ -1,5 +1,6 @@
 package com.the_render_box.dnd
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +18,7 @@ import com.the_render_box.dnd.ui.theme.DnD_Initiative_TrackerTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MainActivity.appContext = applicationContext
         enableEdgeToEdge()
         setContent {
             DnD_Initiative_TrackerTheme {
@@ -25,6 +27,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        lateinit  var appContext: Context
     }
 }
 
