@@ -2,7 +2,8 @@ package com.the_render_box.dnd.data
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.the_render_box.dnd.ui.composables.Entry
+import android.util.Log
+import com.the_render_box.dnd.ui.composables.PlayerEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -22,13 +23,13 @@ data class DnDData(
 
 const val dndDataFileName = "dnd_data";
 
-fun EntryToDnDData(entry: Entry): DnDData
+fun EntryToDnDData(playerEntry: PlayerEntry): DnDData
 {
-    return DnDData(id = entry.id,
-        initiative = entry.initiative.toInt(),
-        name = entry.name,
-        hp = entry.hp.toInt(),
-        ac = entry.ac.toInt()
+    return DnDData(id = playerEntry.id,
+        initiative = playerEntry.initiative.toInt(),
+        name = playerEntry.name,
+        hp = playerEntry.hp.toInt(),
+        ac = playerEntry.ac.toInt()
     )
 }
 
@@ -54,6 +55,7 @@ fun SaveAllDnDData(context: Context, data: List<DnDData>)
     println("SaveAllDnDData: $data")
     val fileOutputStream = context.openFileOutput(dndDataFileName, Context.MODE_PRIVATE)
     Json.encodeToStream(data, fileOutputStream)
+    Log.d("DnDData", "Encoded Data")
 }
 
 @OptIn(ExperimentalSerializationApi::class)

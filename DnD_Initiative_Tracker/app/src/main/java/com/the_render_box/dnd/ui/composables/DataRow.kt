@@ -2,11 +2,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp // Import the sp unit for font size
@@ -32,13 +34,13 @@ val DarkRed = Color(0xFF9B5858) // Based on the color of the right-most cell in 
 fun EntryRow(
     onSaveClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onValueChange: (String, String, String, String) -> Unit
+    onValueChange: (initiative: Int?, name: String, hp: Int?, ac: Int?) -> Unit
 ) {
     // Use remember and mutableStateOf to manage the state of each of the four text fields
-    var text1 by remember { mutableStateOf("") }
-    var text2 by remember { mutableStateOf("") }
-    var text3 by remember { mutableStateOf("") }
-    var text4 by remember { mutableStateOf("") }
+    var initiativeText by remember { mutableStateOf("") }
+    var nameText by remember { mutableStateOf("") }
+    var hpText by remember { mutableStateOf("") }
+    var armorClassText by remember { mutableStateOf("") }
 
     // Use a Column composable to stack the text fields row and the buttons row.
     Column(
@@ -65,21 +67,24 @@ fun EntryRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
-                value = text1,
-                onValueChange = {
-                    text1 = it
-                    onValueChange(text1, text2, text3, text4)
+                value = initiativeText,
+                onValueChange = { input ->
+                    if(input.all { it.isDigit() }){
+                        initiativeText = input
+                        onValueChange(initiativeText.toIntOrNull(), nameText, hpText.toIntOrNull(), armorClassText.toIntOrNull())
+                    }
                 },
-                label = { Text("Initiative", color = DarkGreen, fontSize = 12.sp) }, // Example of smaller font size
+                label = { Text("Initiative", color = DarkGreen, fontSize = 12.sp) },
                 colors = textFieldColors,
-                modifier = Modifier.weight(1f)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.weight(1f),
             )
             Spacer(modifier = Modifier.width(4.dp))
             OutlinedTextField(
-                value = text2,
+                value = nameText,
                 onValueChange = {
-                    text2 = it
-                    onValueChange(text1, text2, text3, text4)
+                    nameText = it
+                    onValueChange(initiativeText.toIntOrNull(), nameText, hpText.toIntOrNull(), armorClassText.toIntOrNull())
                 },
                 label = { Text("Name", color = DarkGreen, fontSize = 12.sp) },
                 colors = textFieldColors,
@@ -87,21 +92,28 @@ fun EntryRow(
             )
             Spacer(modifier = Modifier.width(4.dp))
             OutlinedTextField(
-                value = text3,
-                onValueChange = {
-                    text3 = it
-                    onValueChange(text1, text2, text3, text4)
+                value = hpText,
+                onValueChange = { input ->
+                    if(input.all{ it.isDigit() }) {
+                        hpText = input
+                        onValueChange(initiativeText.toIntOrNull(), nameText, hpText.toIntOrNull(), armorClassText.toIntOrNull())
+                    }
                 },
                 label = { Text("HP", color = DarkGreen, fontSize = 12.sp) },
                 colors = textFieldColors,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
+                )
             )
             Spacer(modifier = Modifier.width(4.dp))
             OutlinedTextField(
-                value = text4,
-                onValueChange = {
-                    text4 = it
-                    onValueChange(text1, text2, text3, text4)
+                value = armorClassText,
+                onValueChange = { input ->
+                    if (input.all { it.isDigit() }) {
+                        armorClassText = input
+                        onValueChange(initiativeText.toIntOrNull(), nameText, hpText.toIntOrNull(), armorClassText.toIntOrNull())
+                    }
                 },
                 label = { Text("AC", color = DarkGreen, fontSize = 12.sp) },
                 colors = textFieldColors,
@@ -110,7 +122,7 @@ fun EntryRow(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
+        //TODO: Remove and make data save asynchronously
         // Second row for the buttons
         Row(
             modifier = Modifier.fillMaxWidth(),

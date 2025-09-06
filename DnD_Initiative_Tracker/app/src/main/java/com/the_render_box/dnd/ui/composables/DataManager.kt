@@ -5,11 +5,13 @@ import EntryRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.the_render_box.dnd.MainActivity
@@ -18,7 +20,7 @@ import com.the_render_box.dnd.data.LoadAllDnDData
 import com.the_render_box.dnd.data.SaveDnDData
 
 // Data class to hold the state of an entry row
-data class Entry(
+data class PlayerEntry(
     val id: String = java.util.UUID.randomUUID().toString(),
     var initiative: String = "",
     var name: String = "",
@@ -32,17 +34,29 @@ data class Entry(
  */
 @Composable
 fun InfoManagerComposable(modifier: Modifier = Modifier) {
-    var entries by remember {
-        val data = LoadAllDnDData(MainActivity.appContext)
-            .map { it -> Entry(
-                id = it.id,
-                initiative = it.initiative.toString(),
-                name = it.name,
-                hp = it.hp.toString(),
-                ac = it.ac.toString()
-                )
-            }
-        mutableStateOf(data)
+    var entries by remember { mutableStateOf(listOf<PlayerEntry>()) }
+    val context = LocalContext.current
+
+    //Load existing data
+    LaunchedEffect(Unit) {
+        val data = try {
+            LoadAllDnDData(context)
+                .map {
+                    PlayerEntry(
+                        id = it.id,
+                        initiative = it.initiative.toString(),
+                        name = it.name,
+                        hp = it.hp.toString(),
+                        ac = it.ac.toString()
+                    )
+                }
+        } catch (e: Exception) {
+            println("Error loading data: ${e.message}")
+
+            // Return a single empty entry on error or initial load
+            listOf(PlayerEntry())
+        }
+        entries = data
     }
 
     Column(
@@ -65,25 +79,35 @@ fun InfoManagerComposable(modifier: Modifier = Modifier) {
                         entries = entries.filter { it.id != entry.id }
                     },
                     onValueChange = { init, name, hp, ac ->
-                        entry.initiative = init
+                        entry.initiative = init?.toString() ?: "Error"
                         entry.name = name
-                        entry.hp = hp
-                        entry.ac = ac
+                        entry.hp = hp?.toString() ?:"Error"
+                        entry.ac = ac?.toString() ?:"Error"
                     }
                 )
             }
         }
 
-        // "Add Entry" button at the bottom of the screen
         Button(
             onClick = {
-                entries = entries + Entry()
+                entries = entries + PlayerEntry()
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
         ) {
             Text("Add Entry")
+        }
+
+        Button(
+            onClick = {
+                // TODO: Add sorting logic here
+            },
+            modifier = Modifier.fillMaxWidth(),
+
+        ) {
+            Text("Sort")
         }
     }
 }
